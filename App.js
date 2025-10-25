@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import { StyleSheet, Text, View,TextInput,Pressable,KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View,TextInput,Pressable,KeyboardAvoidingView, Platform ,Alert} from 'react-native';
 
 export default function App() {
   let [username,setUserName]=useState("");
@@ -12,6 +12,26 @@ export default function App() {
   let [passwordError,setPasswordError]=useState("");
   let [website,setWebsite]=useState("");
   let [websiteError,setWebsiteError]=useState("");
+  let [serverResponse,setServerResponse]=useState("");
+
+  const submitUserData=async()=>{
+      let formData=new FormData();
+  formData.append("username",username);
+  formData.append("email",email);
+  formData.append("password",password);
+  formData.append("phoneNumber",phoneNumber);
+  formData.append("website",website);
+
+    let makeRequest=await fetch("http://192.168.150.192/signup-demo/signup.php",{
+      method:"POST",
+      body:formData
+    });
+    let data=await makeRequest.json();
+    setServerResponse(data.message);
+  }
+  const handlePress=()=>{
+    submitUserData();
+  }
   return (
     
     <View style={styles.container}>
@@ -82,8 +102,12 @@ export default function App() {
       <Text style={styles.errorField}>{websiteError}</Text> 
       </KeyboardAvoidingView>
     </View>
+
+    <View>
+      <Text>{serverResponse}</Text>
+    </View>
     <View style={styles.field}>
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Submit</Text>
       </Pressable>
     </View>
